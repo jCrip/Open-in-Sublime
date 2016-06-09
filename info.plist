@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.jCri.alfred.sublopen</string>
+	<key>category</key>
+	<string>Productivity</string>
+	<key>connections</key>
+	<dict>
+		<key>557A03C4-9DD9-4EE7-9A04-6667D824403A</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>DEAFC118-81B7-42D6-A99F-F007CE98F6DA</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>7C37B436-47F5-447A-AEF2-D84595EAC652</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>9FACDDF3-6371-452C-82BC-FEB982F32481</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>DEAFC118-81B7-42D6-A99F-F007CE98F6DA</key>
+		<array/>
+		<key>F955C061-DEC7-4AE3-9551-2BAEA165F6A1</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>9FACDDF3-6371-452C-82BC-FEB982F32481</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>FE3B6C7B-FC46-47E1-8278-DCEDE54BC86B</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>21B06A24-98F3-4539-B977-5C0F51330422</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Juan Cristobal Pazos</string>
+	<key>description</key>
+	<string>Open a file, folder or project in Sublime Text.</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Open in Sublime</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>1</integer>
+				<key>hotkey</key>
+				<integer>125</integer>
+				<key>hotmod</key>
+				<integer>11403264</integer>
+				<key>hotstring</key>
+				<string>↓</string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>FE3B6C7B-FC46-47E1-8278-DCEDE54BC86B</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>applescript</key>
+				<string>on alfred_script(q)
+
+    if length of q is greater than 0 then
+        set oldDelimit to AppleScript's text item delimiters
+        set AppleScript's text item delimiters to {tab}
+        set pathList to {}
+        set splitPaths to every text item of q
+        repeat with anItem in splitPaths
+            set itemPath to quoted form of POSIX path of (anItem as text)
+            set pathList to pathList &amp; " " &amp; itemPath
+        end repeat
+        set AppleScript's text item delimiters to oldDelimit
+    else
+        if application "Path Finder" is frontmost then
+          tell application "Path Finder"
+            set pathfinderselection to selection
+            if pathfinderselection is missing value then
+              display dialog "Nothing selected" buttons ¬ 
+                {"Oh, crud..."} default button 1
+              return
+            end if
+            set pathfinderpaths to ""
+            repeat with i from 1 to count of pathfinderselection
+              set pfItem to item i of pathfinderselection
+              -- Corrects for error when hidden files are showing
+              try
+                set currentpathfinderpath to (POSIX path of pfItem)
+                set pathfinderpaths to pathfinderpaths &amp; space ¬ 
+                  &amp; quoted form of currentpathfinderpath
+              end try
+            end repeat
+            set pathlist to pathfinderpaths
+          end tell
+        else if application "Finder" is frontmost then
+          tell application "Finder"
+            try
+              if selection is {} then
+                set finderAlias to folder of the ¬ 
+                  front window as alias
+                set finderSelection to quoted form of POSIX path of finderAlias
+              else
+                set finderSelection to selection as alias list
+              end if
+            on error
+              display dialog "Nothing selected" buttons ¬ 
+                {"Curses, foiled again!..."} default button 1
+              return
+            end try
+          end tell
+          set pathlist to finderSelection
+        end if
+    end if
+
+    tell application "System Events"
+        do shell script "/usr/local/bin/subl --stay -n " &amp; pathList
+    end tell
+
+end alfred_script</string>
+				<key>cachescript</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.applescript</string>
+			<key>uid</key>
+			<string>21B06A24-98F3-4539-B977-5C0F51330422</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>script</key>
+				<string>SUBL_F=$(echo "{query}" | sed "s/\(.*\)\(:::\)\([23]\)/\1/")
+/usr/local/bin/subl --stay -n --project "$SUBL_F"</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>DEAFC118-81B7-42D6-A99F-F007CE98F6DA</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>subp</string>
+				<key>queuedelaycustom</key>
+				<integer>1</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<false/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Working...</string>
+				<key>script</key>
+				<string>python proj.py "{query}" 2&gt;&amp;1 | tee proj.log</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Open Sublime Text projects in Sublime.</string>
+				<key>title</key>
+				<string>Open in Sublime</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>557A03C4-9DD9-4EE7-9A04-6667D824403A</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>acceptsmulti</key>
+				<true/>
+				<key>filetypes</key>
+				<array/>
+				<key>name</key>
+				<string>Open in Sublime</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.action</string>
+			<key>uid</key>
+			<string>F955C061-DEC7-4AE3-9551-2BAEA165F6A1</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>script</key>
+				<string>SUBL_V=$(echo "{query}" | sed "s/\(.*\)\(:::\)\([23]\)/\3/")
+SUBL_F=$(echo "{query}" | sed "s/\(.*\)\(:::\)\([23]\)/\1/")
+/usr/local/bin/subl --stay -n "$SUBL_F"</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>9FACDDF3-6371-452C-82BC-FEB982F32481</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>anchorfields</key>
+				<true/>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>daterange</key>
+				<integer>0</integer>
+				<key>fields</key>
+				<array>
+					<dict>
+						<key>field</key>
+						<string>kMDItemDisplayName</string>
+						<key>not</key>
+						<false/>
+						<key>split</key>
+						<true/>
+						<key>value</key>
+						<string>{query}</string>
+						<key>words</key>
+						<true/>
+					</dict>
+					<dict>
+						<key>field</key>
+						<string>kMDItemFinderComment</string>
+						<key>not</key>
+						<false/>
+						<key>split</key>
+						<true/>
+						<key>value</key>
+						<string>{query}</string>
+						<key>words</key>
+						<true/>
+					</dict>
+				</array>
+				<key>includesystem</key>
+				<true/>
+				<key>keyword</key>
+				<string>subf</string>
+				<key>runningsubtext</key>
+				<string></string>
+				<key>scopes</key>
+				<array/>
+				<key>subtext</key>
+				<string>Open file matching '{query}' in Sublime.</string>
+				<key>title</key>
+				<string>Search and Open in Sublime</string>
+				<key>types</key>
+				<array/>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.filefilter</string>
+			<key>uid</key>
+			<string>7C37B436-47F5-447A-AEF2-D84595EAC652</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>Open files, folders or projects in Sublime Text 3. The script defaults to Sublime Text 3</string>
+	<key>uidata</key>
+	<dict>
+		<key>21B06A24-98F3-4539-B977-5C0F51330422</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>7</integer>
+			<key>xpos</key>
+			<integer>540</integer>
+			<key>ypos</key>
+			<integer>50</integer>
+		</dict>
+		<key>557A03C4-9DD9-4EE7-9A04-6667D824403A</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>1</integer>
+			<key>xpos</key>
+			<integer>120</integer>
+			<key>ypos</key>
+			<integer>200</integer>
+		</dict>
+		<key>7C37B436-47F5-447A-AEF2-D84595EAC652</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>4</integer>
+			<key>xpos</key>
+			<integer>120</integer>
+			<key>ypos</key>
+			<integer>490</integer>
+		</dict>
+		<key>9FACDDF3-6371-452C-82BC-FEB982F32481</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>4</integer>
+			<key>xpos</key>
+			<integer>540</integer>
+			<key>ypos</key>
+			<integer>420</integer>
+		</dict>
+		<key>DEAFC118-81B7-42D6-A99F-F007CE98F6DA</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>1</integer>
+			<key>xpos</key>
+			<integer>540</integer>
+			<key>ypos</key>
+			<integer>200</integer>
+		</dict>
+		<key>F955C061-DEC7-4AE3-9551-2BAEA165F6A1</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>4</integer>
+			<key>xpos</key>
+			<integer>120</integer>
+			<key>ypos</key>
+			<integer>350</integer>
+		</dict>
+		<key>FE3B6C7B-FC46-47E1-8278-DCEDE54BC86B</key>
+		<dict>
+			<key>colorindex</key>
+			<integer>7</integer>
+			<key>xpos</key>
+			<integer>120</integer>
+			<key>ypos</key>
+			<integer>50</integer>
+		</dict>
+	</dict>
+	<key>version</key>
+	<string>2.0.0</string>
+	<key>webaddress</key>
+	<string>www.jcri.cl</string>
+</dict>
+</plist>
